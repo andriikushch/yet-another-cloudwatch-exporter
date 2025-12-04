@@ -47,7 +47,10 @@ func (c client) ListMetrics(ctx context.Context, namespace string, metric *model
 		filter.RecentlyActive = types.RecentlyActivePt3h
 	}
 
-	c.logger.Debug("ListMetrics", "input", filter)
+	// check log level to avoid unnecessary string building
+	if c.logger.Enabled(ctx, slog.LevelDebug) {
+		c.logger.Debug("ListMetrics", "input", listMetricsInputToString(filter).String())
+	}
 
 	paginator := cloudwatch.NewListMetricsPaginator(c.cloudwatchAPI, filter, func(options *cloudwatch.ListMetricsPaginatorOptions) {
 		options.StopOnDuplicateToken = true
@@ -63,8 +66,11 @@ func (c client) ListMetrics(ctx context.Context, namespace string, metric *model
 		}
 
 		metricsPage := toModelMetric(page)
-		c.logger.Debug("ListMetrics", "output", metricsPage)
 
+		// check log level to avoid unnecessary string building
+		if c.logger.Enabled(ctx, slog.LevelDebug) {
+			c.logger.Debug("ListMetrics", "output", metricToString(metricsPage).String())
+		}
 		fn(metricsPage)
 	}
 
@@ -125,7 +131,11 @@ func (c client) GetMetricData(ctx context.Context, getMetricData []*model.Cloudw
 	}
 	var resp cloudwatch.GetMetricDataOutput
 	promutil.CloudwatchGetMetricDataAPIMetricsCounter.Add(float64(len(input.MetricDataQueries)))
-	c.logger.Debug("GetMetricData", "input", input)
+
+	// check log level to avoid unnecessary string building
+	if c.logger.Enabled(ctx, slog.LevelDebug) {
+		c.logger.Debug("GetMetricData", "input", getMetricDataInputToString(input).String())
+	}
 
 	paginator := cloudwatch.NewGetMetricDataPaginator(c.cloudwatchAPI, input, func(options *cloudwatch.GetMetricDataPaginatorOptions) {
 		options.StopOnDuplicateToken = true
@@ -143,7 +153,11 @@ func (c client) GetMetricData(ctx context.Context, getMetricData []*model.Cloudw
 		resp.MetricDataResults = append(resp.MetricDataResults, page.MetricDataResults...)
 	}
 
-	c.logger.Debug("GetMetricData", "output", resp)
+	// check log level to avoid unnecessary string building
+	if c.logger.Enabled(ctx, slog.LevelDebug) {
+
+		c.logger.Debug("GetMetricData", "output", getMetricDataOutputToString(resp).String())
+	}
 
 	return toMetricDataResult(resp, exportAllDataPoints)
 }
