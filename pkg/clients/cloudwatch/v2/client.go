@@ -49,7 +49,7 @@ func (c client) ListMetrics(ctx context.Context, namespace string, metric *model
 
 	// check log level to avoid unnecessary string building
 	if c.logger.Enabled(ctx, slog.LevelDebug) {
-		c.logger.Debug("ListMetrics", "input", listMetricsInputToString(filter).String())
+		c.logger.Debug("ListMetrics", "input", listMetricsInputToString(filter))
 	}
 
 	paginator := cloudwatch.NewListMetricsPaginator(c.cloudwatchAPI, filter, func(options *cloudwatch.ListMetricsPaginatorOptions) {
@@ -69,7 +69,7 @@ func (c client) ListMetrics(ctx context.Context, namespace string, metric *model
 
 		// check log level to avoid unnecessary string building
 		if c.logger.Enabled(ctx, slog.LevelDebug) {
-			c.logger.Debug("ListMetrics", "output", metricToString(metricsPage).String())
+			c.logger.Debug("ListMetrics", "output", metricToString(metricsPage))
 		}
 		fn(metricsPage)
 	}
@@ -134,7 +134,7 @@ func (c client) GetMetricData(ctx context.Context, getMetricData []*model.Cloudw
 
 	// check log level to avoid unnecessary string building
 	if c.logger.Enabled(ctx, slog.LevelDebug) {
-		c.logger.Debug("GetMetricData", "input", getMetricDataInputToString(input).String())
+		c.logger.Debug("GetMetricData", "input", getMetricDataInputToString(input))
 	}
 
 	paginator := cloudwatch.NewGetMetricDataPaginator(c.cloudwatchAPI, input, func(options *cloudwatch.GetMetricDataPaginatorOptions) {
@@ -156,7 +156,7 @@ func (c client) GetMetricData(ctx context.Context, getMetricData []*model.Cloudw
 	// check log level to avoid unnecessary string building
 	if c.logger.Enabled(ctx, slog.LevelDebug) {
 
-		c.logger.Debug("GetMetricData", "output", getMetricDataOutputToString(resp).String())
+		c.logger.Debug("GetMetricData", "output", getMetricDataOutputToString(resp))
 	}
 
 	return toMetricDataResult(resp, exportAllDataPoints)
