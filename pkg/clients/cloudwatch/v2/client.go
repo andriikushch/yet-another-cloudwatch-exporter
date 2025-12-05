@@ -48,8 +48,8 @@ func (c client) ListMetrics(ctx context.Context, namespace string, metric *model
 	}
 
 	// check log level and namespace to avoid unnecessary string building
-	if c.logger.Enabled(ctx, slog.LevelDebug) && shouldDebugNamespace(namespace) {
-		c.logger.Debug("ListMetrics", "input", listMetricsInputToString(filter))
+	if shouldDebugNamespace(namespace) {
+		c.logger.Info("ListMetrics", "input", listMetricsInputToString(filter))
 	}
 
 	paginator := cloudwatch.NewListMetricsPaginator(c.cloudwatchAPI, filter, func(options *cloudwatch.ListMetricsPaginatorOptions) {
@@ -68,8 +68,8 @@ func (c client) ListMetrics(ctx context.Context, namespace string, metric *model
 		metricsPage := toModelMetric(page)
 
 		// check log level and namespace to avoid unnecessary string building
-		if c.logger.Enabled(ctx, slog.LevelDebug) && shouldDebugNamespace(namespace) {
-			c.logger.Debug("ListMetrics", "output", metricToString(metricsPage))
+		if shouldDebugNamespace(namespace) {
+			c.logger.Info("ListMetrics", "output", metricToString(metricsPage))
 		}
 		fn(metricsPage)
 	}
@@ -133,8 +133,8 @@ func (c client) GetMetricData(ctx context.Context, getMetricData []*model.Cloudw
 	promutil.CloudwatchGetMetricDataAPIMetricsCounter.Add(float64(len(input.MetricDataQueries)))
 
 	// check log level and namespace to avoid unnecessary string building
-	if c.logger.Enabled(ctx, slog.LevelDebug) && shouldDebugNamespace(namespace) {
-		c.logger.Debug("GetMetricData", "input", getMetricDataInputToString(input))
+	if shouldDebugNamespace(namespace) {
+		c.logger.Info("GetMetricData", "input", getMetricDataInputToString(input))
 	}
 
 	paginator := cloudwatch.NewGetMetricDataPaginator(c.cloudwatchAPI, input, func(options *cloudwatch.GetMetricDataPaginatorOptions) {
@@ -154,8 +154,8 @@ func (c client) GetMetricData(ctx context.Context, getMetricData []*model.Cloudw
 	}
 
 	// check log level and namespace to avoid unnecessary string building
-	if c.logger.Enabled(ctx, slog.LevelDebug) && shouldDebugNamespace(namespace) {
-		c.logger.Debug("GetMetricData", "output", getMetricDataOutputToString(resp))
+	if shouldDebugNamespace(namespace) {
+		c.logger.Info("GetMetricData", "output", getMetricDataOutputToString(resp))
 	}
 
 	return toMetricDataResult(resp, exportAllDataPoints)
