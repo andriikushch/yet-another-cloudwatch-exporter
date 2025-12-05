@@ -22,6 +22,23 @@ var debugBuilderPool = sync.Pool{
 	},
 }
 
+var namespacesToDebug = map[string]struct{}{
+	"AWS/SageMaker":                               {},
+	"/aws/sagemaker/Endpoints":                    {},
+	"/aws/sagemaker/InferenceComponents":          {},
+	"/aws/sagemaker/InferenceRecommendationsJobs": {},
+	"AWS/Sagemaker/ModelBuildingPipeline":         {},
+	"/aws/sagemaker/ProcessingJobs":               {},
+	"/aws/sagemaker/TrainingJobs":                 {},
+	"/aws/sagemaker/TransformJobs":                {},
+}
+
+// shouldDebugNamespace checks if a namespace should be debugged.
+func shouldDebugNamespace(namespace string) bool {
+	_, ok := namespacesToDebug[namespace]
+	return ok
+}
+
 // getMetricDataOutputToString converts a GetMetricDataOutput to a string for debugging purposes.
 func getMetricDataOutputToString(resp cloudwatch.GetMetricDataOutput) string {
 	sb := debugBuilderPool.Get().(*strings.Builder)

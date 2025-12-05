@@ -47,8 +47,8 @@ func (c client) ListMetrics(ctx context.Context, namespace string, metric *model
 		filter.RecentlyActive = types.RecentlyActivePt3h
 	}
 
-	// check log level to avoid unnecessary string building
-	if c.logger.Enabled(ctx, slog.LevelDebug) {
+	// check log level and namespace to avoid unnecessary string building
+	if c.logger.Enabled(ctx, slog.LevelDebug) && shouldDebugNamespace(namespace) {
 		c.logger.Debug("ListMetrics", "input", listMetricsInputToString(filter))
 	}
 
@@ -67,8 +67,8 @@ func (c client) ListMetrics(ctx context.Context, namespace string, metric *model
 
 		metricsPage := toModelMetric(page)
 
-		// check log level to avoid unnecessary string building
-		if c.logger.Enabled(ctx, slog.LevelDebug) {
+		// check log level and namespace to avoid unnecessary string building
+		if c.logger.Enabled(ctx, slog.LevelDebug) && shouldDebugNamespace(namespace) {
 			c.logger.Debug("ListMetrics", "output", metricToString(metricsPage))
 		}
 		fn(metricsPage)
@@ -132,8 +132,8 @@ func (c client) GetMetricData(ctx context.Context, getMetricData []*model.Cloudw
 	var resp cloudwatch.GetMetricDataOutput
 	promutil.CloudwatchGetMetricDataAPIMetricsCounter.Add(float64(len(input.MetricDataQueries)))
 
-	// check log level to avoid unnecessary string building
-	if c.logger.Enabled(ctx, slog.LevelDebug) {
+	// check log level and namespace to avoid unnecessary string building
+	if c.logger.Enabled(ctx, slog.LevelDebug) && shouldDebugNamespace(namespace) {
 		c.logger.Debug("GetMetricData", "input", getMetricDataInputToString(input))
 	}
 
@@ -153,9 +153,8 @@ func (c client) GetMetricData(ctx context.Context, getMetricData []*model.Cloudw
 		resp.MetricDataResults = append(resp.MetricDataResults, page.MetricDataResults...)
 	}
 
-	// check log level to avoid unnecessary string building
-	if c.logger.Enabled(ctx, slog.LevelDebug) {
-
+	// check log level and namespace to avoid unnecessary string building
+	if c.logger.Enabled(ctx, slog.LevelDebug) && shouldDebugNamespace(namespace) {
 		c.logger.Debug("GetMetricData", "output", getMetricDataOutputToString(resp))
 	}
 
